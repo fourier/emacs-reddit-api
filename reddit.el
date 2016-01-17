@@ -134,9 +134,12 @@ The :api_type is automatically set to \"json\"."
   (let ((url-package-name reddit-user-agent)
         (url-package-version reddit-user-agent-version)
         (url-use-cookies nil)
-        (url-request-extra-headers (unless no-auth (reddit-auth-headers))))
+        (url-request-extra-headers (unless no-auth (reddit-auth-headers)))
+        (url (format "%s%s%s" reddit-base-url
+                     (concat api ".json")
+                     (if plist (concat "?" (reddit-url-encode plist)) ""))))
     (with-current-buffer
-        (url-retrieve-synchronously (format "%s%s" reddit-base-url api))
+        (url-retrieve-synchronously url)
       (goto-char (1+ url-http-end-of-headers))
       (unless (= url-http-response-status 200)
         (signal 'reddit-error (list "reddit request failed"
